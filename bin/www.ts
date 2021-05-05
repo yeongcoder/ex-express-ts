@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import "../src/loadEnv";
+
 /**
  * Module dependencies.
  */
@@ -11,14 +13,14 @@ import http from 'http';
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server:http.Server = http.createServer(app);
+const server:http.Server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -32,8 +34,8 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val: any) {
-  var port = parseInt(val, 10);
+function normalizePort(val: any): boolean | number{
+  let port:number = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe

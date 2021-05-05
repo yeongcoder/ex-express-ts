@@ -5,8 +5,12 @@ import {
 	Entity,
 	OneToMany,
 	PrimaryGeneratedColumn,
-	UpdateDateColumn,
+    UpdateDateColumn,
+    BeforeInsert,
+    BeforeUpdate
 } from "typeorm";
+import { Length, IsEmail } from 'class-validator';
+import bcrypt from 'bcrypt';
 
 @Entity()
 export default class User extends BaseEntity {
@@ -14,18 +18,28 @@ export default class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: number;
 
+    @IsEmail()
     @Column({ type: 'text' })
-    uid!: string;
+    email!: string;
 
+    @Length(8,16)
     @Column({ type: 'text' })
     pwd!: string;
-
+    
+    @Length(14)
     @Column({ type: 'text' })
-    nick_name!: string;
+    username!: string;
 
-    @Column({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp' })
     reg_at!: Date;
 
-    @Column({ type: 'timestamp' })
+    @UpdateDateColumn({ type: 'timestamp' })
     mod_at!: Date;
+
+    @BeforeUpdate()
+    @BeforeInsert()
+    async saveEncryptedPassword(): Promise<void> {
+        console.log("called saveEncryptedPassword")
+        this.pwd = await bcrypt.hash(this.pwd, 5);
+    }
 }

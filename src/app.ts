@@ -3,13 +3,12 @@ import morgan from 'morgan';
 import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
-
 import express, { Request, Response, NextFunction } from 'express';
 import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
 import BaseRouter from './routes/index';
-
+import { cookieProps } from './shared/constants';
 
 // Init express
 const app = express();
@@ -17,7 +16,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieParser(cookieProps.secret));
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('dev'));

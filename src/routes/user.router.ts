@@ -8,6 +8,7 @@ import UserService from '../services/user.service';
 const router = Router();
 
 
+//  유저 목록조회
 router.get('/', async (req: Request, res:Response) => {
     const UserServiceInstance:UserService = new UserService();
     try {
@@ -18,6 +19,7 @@ router.get('/', async (req: Request, res:Response) => {
     }
 })
 
+//  유저 상세조회
 router.get('/:id', async (req: Request, res:Response) => {
     const UserServiceInstance:UserService = new UserService();
     try {
@@ -29,8 +31,8 @@ router.get('/:id', async (req: Request, res:Response) => {
     }
 })
 
+//  회원가입
 router.post('/', async (req: Request, res:Response) => {
-    console.log("req.body:", req.body)
     const userDTO:any = req.body;
     const UserServiceInstance:UserService = new UserService();
     try {
@@ -41,6 +43,7 @@ router.post('/', async (req: Request, res:Response) => {
     }
 })
 
+// 유저 수정
 router.put('/:id', async (req: Request, res:Response) => {
     const userDTO:any = req.body;
     const UserServiceInstance:UserService = new UserService();
@@ -53,6 +56,7 @@ router.put('/:id', async (req: Request, res:Response) => {
     }
 })
 
+//  회원탈퇴
 router.delete('/:id', async (req: Request, res:Response) => {
     const UserServiceInstance:UserService = new UserService();
     try {
