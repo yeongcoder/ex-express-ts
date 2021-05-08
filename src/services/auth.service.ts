@@ -1,8 +1,5 @@
-import { getConnection, getRepository, Repository } from 'typeorm';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import connectdb from '../shared/connectdb';
 import UserModel from '../models/user.model';
 import { JwtService } from '../shared/jwtService';
 import { paramMissingError, loginFailedErr, cookieProps } from '../shared/constants';
@@ -21,10 +18,8 @@ export default class AuthService {
                 throw new Error(paramMissingError);
             }
 
-            const conn = await connectdb();
-
             //  유저조회
-            const user:UserModel = await conn.getRepository(UserModel).findOne({
+            const user:UserModel | undefined = await UserModel.findOne({
                 where: {
                     email
                 }

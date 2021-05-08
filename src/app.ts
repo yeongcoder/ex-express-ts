@@ -9,6 +9,7 @@ import 'express-async-errors';
 
 import BaseRouter from './routes/index';
 import { cookieProps } from './shared/constants';
+import connectdb from './middlewares/connectdb';
 
 // Init express
 const app = express();
@@ -22,23 +23,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('dev'));
 app.use(cors());
 
-// // Show routes called in console during development
-// if (process.env.NODE_ENV === 'development') {
-//     app.use(morgan('dev'));
-// }
-
-// // Security
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(helmet());
-// }
+app.use(connectdb);
 
 // Add APIs
 app.use('/api', BaseRouter);
 
 // Print API errors
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.log(err);
     return res.status(BAD_REQUEST).json({
-        error: err.message,
+        error: 'Unknown Error',
     });
 });
 

@@ -1,64 +1,53 @@
-import { getConnection, getRepository, Repository } from 'typeorm';
-import bcrypt from 'bcrypt';
-
+import { UpdateResult, DeleteResult } from 'typeorm';
 import UserModel from '../models/user.model';
-import connectdb from '../shared/connectdb';
 
 
 export default class UserService {
 
+    // 유저 목록조회
     async getAll(): Promise<UserModel[] | Error> {
 
         try {
 
-            const conn = await connectdb();
-
-            const userList:UserModel[] = await conn.getRepository(UserModel).find();
+            const userList:UserModel[] = await UserModel.find();
             return userList;
 
         } catch(err){
-            console.log(err);
-            throw new Error("Unknown Error");
+
+            throw new Error(err.message);
 
         }
 
     }
 
-    async getOne(id:string): Promise<UserModel | Error > {
+    // 유저 상세조회
+    async getOne(id:string): Promise<UserModel | undefined | Error > {
 
         try {
 
-            const conn = await connectdb();
-
-            const userDetail:UserModel | undefined = await conn.getRepository(UserModel).findOne(id);
-
-            if(!userDetail) throw new Error("Not Found");
+            const userDetail:UserModel | undefined = await UserModel.findOne(id);
 
             return userDetail;
 
         } catch(err){
 
-            console.log(err);
-            throw new Error("Unknown Error");
+            throw new Error(err.message);
 
         }
 
     }
 
+    //  유저 추가
     async add(userDTO:any){
         try {
             const { email, pwd, username } = userDTO;
             if(!email || !pwd || !username){
-                new Error("missing field");
+                new Error('missing field');
             }
-
-            //const conn = await connectdb();
-
-            await connectdb();
 
             //  중복가입 체크
             if(await this.isExist(email)){
-                throw new Error("already exists email")
+                throw new Error('already exists email')
             }
 
             const user:UserModel = new UserModel();
@@ -72,44 +61,39 @@ export default class UserService {
 
         } catch(err){
 
-            console.log(err);
-            throw new Error("Unknown Error");
+            throw new Error(err.message);
 
         }
     }
 
-    async update(id:string, userDTO:any){
+    //  유저 수정
+    async update(id:string, userDTO:any): Promise<UpdateResult>{
         try {
 
-            const conn = await connectdb();
-
-            await conn.getRepository(UserModel).update(id, {
+            const result:UpdateResult = await UserModel.update(id, {
                 username: userDTO.username
             });
 
-            return;
+            return result
 
         } catch(err){
 
-            console.log(err);
-            throw new Error("Unknown Error");
+            throw new Error(err.message);
 
         }
     }
 
-    async delete(id:string){
+    //  유저 삭제
+    async delete(id:string): Promise<DeleteResult>{
         try {
 
-            const conn = await connectdb();
+            const result: DeleteResult = await UserModel.delete(id);
 
-            await conn.getRepository(UserModel).delete(id);
-
-            return;
+            return result;
 
         } catch(err){
 
-            console.log(err);
-            throw new Error("Unknown Error");
+            throw new Error(err.message);
 
         }
     }
