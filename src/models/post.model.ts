@@ -21,13 +21,8 @@ export default class Post extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: number;
 
-    @ManyToOne((type) => UserModel)
-    @JoinColumn()
-    @Column({ type: 'text' })
-    user_id!: UserModel | string;
-
     @Length(16)
-    @Column({ type: 'text' })
+    @Column()
     title!: string;
     
     @Column({ type: 'text' })
@@ -38,5 +33,9 @@ export default class Post extends BaseEntity {
 
     @UpdateDateColumn({ type: 'timestamp' })
     mod_at!: Date;
+
+    @ManyToOne((type) => UserModel, (user) => user.posts)
+    //@JoinColumn()
+    user!: UserModel | string;
 
 }

@@ -1,4 +1,4 @@
-import { UpdateResult, DeleteResult, Like } from 'typeorm';
+import { getRepository, UpdateResult, DeleteResult, Like } from 'typeorm';
 import PostModel from '../models/post.model';
 import UserModel from '../models/user.model';
 
@@ -14,7 +14,6 @@ export default class PostService {
             limit
         } = query;
 
-        if(!search) search = '.*';
         if(!page) page = 1;
         if(!limit) limit = 10;
     
@@ -22,22 +21,27 @@ export default class PostService {
 
             const skip = ( page - 1 ) * limit;
 
+            //  제목과 내용을 기준으로 검색 
+            const where:any[] = [];
+            if(search){
+                where.push({
+                    title: Like(`%${search}%`)
+                });
+                where.push({
+                    desc: Like(`%${search}%`)
+                });
+            }
+
             const postList:PostModel[] = await PostModel.find({
                 relations: [
-                    'user_id'
+                    'user'
                 ],
-                //  제목과 내용을 기준으로 검색 
-                where: [
-                    {
-                        title: Like(`%${search}%`)
-                    },
-                    {
-                        desc: Like(`%${search}%`)
-                    }
-                ],
+                where,
                 skip: skip,
                 take: limit
             });
+
+
             return postList;
 
         } catch(err){
@@ -55,7 +59,7 @@ export default class PostService {
 
             const postDetail:PostModel | undefined = await PostModel.findOne(id, {
                 relations: [
-                    'user_id'
+                    'user'
                 ]
             });
 
@@ -79,7 +83,7 @@ export default class PostService {
             } = postDTO;
 
             const post:PostModel = new PostModel();
-            post.user_id = userId;
+            post.user = userId;
             post.title = title;
             post.desc = desc;
 
@@ -99,12 +103,6 @@ export default class PostService {
     async update(userId:string, id:string, postDTO:any): Promise<number>{
         try {
 
-            // 게시글 작성자인지 확인
-            const postWillUpdated:PostModel | undefined = await PostModel.findOne(id);
-            if(postWillUpdated && postWillUpdated.user_id != userId){
-                return 0;
-            }
-
             const result:UpdateResult = await PostModel.update(id, postDTO);
 
             return result.affected || 0;
@@ -120,12 +118,6 @@ export default class PostService {
     //  게시글 삭제
     async delete(userId:string, id:string): Promise<number>{
         try {
-
-            // 게시글 작성자인지 확인
-            const postWillUpdated:PostModel | undefined = await PostModel.findOne(id);
-            if(postWillUpdated && postWillUpdated.user_id != userId){
-                return 0;
-            }
 
             const result:DeleteResult = await PostModel.delete(id);
 

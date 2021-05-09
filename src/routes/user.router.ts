@@ -34,27 +34,17 @@ router.post('/', async (req: Request, res:Response) => {
 
 // 유저 수정
 router.put('/:id', async (req: Request, res:Response) => {
-    //  수정을 요청한 유저가 수정될 유저가 아닌경우
-    if(res.locals.userId != req.params.id){
-        return res.status(BAD_REQUEST).end();
-    }
     const userDTO:any = req.body;
     const UserServiceInstance:UserService = new UserService();
-    const { id } = req.params as ParamsDictionary;
-    const { affected } =await UserServiceInstance.update(id, userDTO);
+    const { affected } =await UserServiceInstance.update(res.locals.userId, userDTO);
     if(!affected) return res.status(NOT_FOUND).end();
     return res.status(OK).end();
 })
 
 //  회원탈퇴
 router.delete('/:id', async (req: Request, res:Response) => {
-    //  탈퇴를 요청한 유저가 탈퇴될 유저가 아닌경우
-    if(res.locals.userId != req.params.id){
-        return res.status(BAD_REQUEST).end();
-    }
     const UserServiceInstance:UserService = new UserService();
-    const { id } = req.params as ParamsDictionary;
-    const { affected } =await UserServiceInstance.delete(id);
+    const { affected } =await UserServiceInstance.delete(res.locals.userId);
     if(!affected) return res.status(NOT_FOUND).end();
     return res.status(OK).end();
 })

@@ -9,8 +9,9 @@ import {
     BeforeInsert,
     BeforeUpdate
 } from "typeorm";
-import { Length, IsEmail } from 'class-validator';
 import bcrypt from 'bcrypt';
+
+import PostModel from './post.model';
 
 @Entity()
 export default class User extends BaseEntity {
@@ -18,16 +19,13 @@ export default class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: number;
 
-    @IsEmail()
-    @Column({ type: 'text' })
+    @Column({ type: "text" })
     email!: string;
 
-    @Length(8,16)
-    @Column({ type: 'text' })
+    @Column({ type: "text" })
     pwd!: string;
     
-    @Length(14)
-    @Column({ type: 'text' })
+    @Column({ type: "text" })
     username!: string;
 
     @CreateDateColumn({ type: 'timestamp' })
@@ -36,10 +34,12 @@ export default class User extends BaseEntity {
     @UpdateDateColumn({ type: 'timestamp' })
     mod_at!: Date;
 
+    @OneToMany((type) => PostModel, (post) => post.user)
+    posts!: PostModel[] | null
+
     @BeforeUpdate()
     @BeforeInsert()
     async saveEncryptedPassword(): Promise<void> {
-        console.log("called saveEncryptedPassword")
         this.pwd = await bcrypt.hash(this.pwd, 5);
     }
 }
